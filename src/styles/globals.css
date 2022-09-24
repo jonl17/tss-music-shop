@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 @layer utilities {
-  .boogieman__layer {
+  .aln__beard {
     @apply opacity-0 transition-opacity;
   }
   #video-clip {

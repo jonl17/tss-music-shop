@@ -8173,7 +8173,7 @@ export const RingPath = () => {
   return (
     <g id="boogieman-ringpath">
       <line
-        className="stroke-black"
+        className="stroke-black opacity-0"
         x1="406.93"
         y1="108.43"
         x2="575.88"

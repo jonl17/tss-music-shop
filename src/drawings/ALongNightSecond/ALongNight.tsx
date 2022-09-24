@@ -10,7 +10,6 @@ import {
   Beard,
   Pipe,
   HandColor,
-  Shoulder,
   Hand,
   Layer36Second,
   RingPath,
@@ -53,33 +52,43 @@ export default function ALongNight() {
   const inputRef = useRef<HTMLInputElement | null>(null)
 
   const [beardLayers, setBeardLayers] = useState<HTMLElement[]>([])
+  const [ringLayer, setRingLayer] = useState<HTMLElement>()
+  const [ringPathLayer, setRingPathLayer] = useState<HTMLElement>()
+
   useEffect(() => {
-    const elements = document.querySelectorAll('.aln__beard')
-    setBeardLayers(Array.from(elements) as HTMLElement[])
+    const beardElements = document.querySelectorAll('.aln__beard')
+    const ringElement = document.querySelector('#boogieman-ring')
+    setBeardLayers(Array.from(beardElements) as HTMLElement[])
+    setRingLayer(ringElement as HTMLElement)
   }, [])
 
   useEffect(() => {
+    // position input element
+    // align with the boogieman ring-path element
     const el = document.getElementById('boogieman-ringpath')
-    const current = inputRef.current
-    const callback = (el: HTMLElement) => {
+    setRingPathLayer(el as HTMLElement)
+
+    const positionInput = (el: HTMLElement) => {
       const { width, x, y } = el.getBoundingClientRect()
+      const current = inputRef.current
 
       if (current) {
-        current.style.width = `${width}px`
+        current.style.width = `${width * 1.1}px`
         current.style.transform = `translate3d(${x}px, ${y}px, 0) rotate(5deg)`
       }
     }
-    if (el) {
-      callback(el)
-      if (window) {
-        window.addEventListener('resize', () => callback(el))
-        return () => window.removeEventListener('resize', () => callback(el))
-      }
+
+    positionInput(el as HTMLElement)
+
+    if (window && el) {
+      window.addEventListener('resize', () => positionInput(el))
+      return () => window.removeEventListener('resize', () => positionInput(el))
     }
   }, [])
 
   const handleValueChange = (value: string) => {
     const currentValue = parseInt(value)
+
     beardLayers.forEach((layer, idx) => {
       if (idx > currentValue) {
         layer.style.opacity = '0'
@@ -87,6 +96,16 @@ export default function ALongNight() {
         layer.style.opacity = '1'
       }
     })
+
+    const maxInputVal = beardLayers.length
+    const inputValPerc = currentValue / maxInputVal
+    if (ringPathLayer && ringLayer) {
+      const maxX = 160
+      const maxY = 18
+      const xTransform = maxX * inputValPerc
+      const yTransform = maxY * inputValPerc
+      ringLayer.style.transform = `translate(${xTransform}px, ${yTransform}px)`
+    }
   }
 
   return (
@@ -98,7 +117,7 @@ export default function ALongNight() {
         max={beardLayers.length}
         ref={inputRef}
         type="range"
-        className="absolute top-0"
+        className="hover:cursor-pointer absolute -top-3 -left-2 md:-left-4 opacity-0 appearance-none h-[5%]"
         onChange={(e) => handleValueChange(e.target.value)}
       />
     </div>
